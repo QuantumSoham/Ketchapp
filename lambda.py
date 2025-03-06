@@ -1,14 +1,19 @@
 import json
 import boto3
+import os
+from dotenv import load_dotenv
 from datetime import datetime
 
-# Initialize the API Gateway Management API client
-ENDPOINT = '8u1yq4r426.execute-api.us-east-1.amazonaws.com/production/'
-client = boto3.client('apigatewaymanagementapi', endpoint_url=f'https://{ENDPOINT}')
+# Load environment variables from .env file
+load_dotenv()
 
-# Initialize the S3 client
+# Retrieve sensitive information from environment variables
+ENDPOINT = os.getenv('API_GATEWAY_ENDPOINT')
+S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
+
+# Initialize AWS clients
+client = boto3.client('apigatewaymanagementapi', endpoint_url=f'https://{ENDPOINT}')
 s3_client = boto3.client('s3')
-S3_BUCKET_NAME = 'chatlogger'  # Replace with your S3 bucket name
 
 NAMES_DB = {}
 
@@ -19,7 +24,6 @@ def log_to_s3(message):
     log_key = f"logs/{datetime.utcnow().strftime('%Y/%m/%d')}/log.txt"
     
     try:
-        # Append the log message to the existing log file in S3
         s3_client.put_object(
             Bucket=S3_BUCKET_NAME,
             Key=log_key,
@@ -38,18 +42,17 @@ def send_to_one(connection_id, body):
         )
     except client.exceptions.GoneException:
         log_to_s3(f"Connection {connection_id} is gone. Removing from NAMES_DB.")
-        NAMES_DB.pop(connection_id, None)  # Safely remove the connection
+        NAMES_DB.pop(connection_id, None)
     except Exception as e:
         log_to_s3(f"Error sending to connection {connection_id}: {e}")
 
 def send_to_all(connection_ids, body):
     log_to_s3(f"Sending message to all connections: {body}")
-    for connection_id in list(connection_ids):  # Create a static list of connection IDs
+    for connection_id in list(connection_ids):
         send_to_one(connection_id, body)
 
 def lambda_handler(event, context):
     log_to_s3(f"Received event: {event}")
-    # Determine the type of event
     if event['requestContext']['eventType'] == 'CONNECT':
         return connect(event)
     elif event['requestContext']['eventType'] == 'DISCONNECT':
@@ -65,7 +68,6 @@ def connect(event):
 def setName(payload, connection_id):
     log_to_s3(f"Setting name for connection {connection_id} with payload: {payload}")
     NAMES_DB[connection_id] = payload['name']
-    log_to_s3(f"Connection ID {connection_id} set to name: {payload['name']}")
     send_to_all(list(NAMES_DB.keys()), {'members': list(NAMES_DB.values())})
     send_to_all(list(NAMES_DB.keys()), {'systemMessage': f"{NAMES_DB[connection_id]} has joined the chat"})
 
@@ -74,7 +76,7 @@ def sendPublic(payload, connection_id):
     if connection_id in NAMES_DB:
         send_to_all(list(NAMES_DB.keys()), {'publicMessage': f"{NAMES_DB[connection_id]}: {payload['message']}"})
     else:
-        log_to_s3(f"Connection ID {connection_id} not found in NAMES_DB. Cannot send public message.")
+        log_to_s3(f"Connection ID {connection_id} not found in NAMES_DB.")
 
 def sendPrivate(payload, connection_id):
     log_to_s3(f"Sending private message from connection {connection_id} with payload: {payload}")
