@@ -1,0 +1,90 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #f0f0f0;
+}
+
+.username-input, .username-display {
+  margin-right: 10px;
+}
+
+.connect-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  background-color: green;
+  color: white;
+}
+
+.disconnect-button {
+  background-color: red;
+}
+
+.connect-button:disabled {
+  background-color: lightgreen;
+}
+
+.chat-container {
+  display: flex;
+  flex: 1;
+}
+
+.members-list {
+  width: 25%;
+  border-right: 1px solid #ccc;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.chat-pane {
+  width: 75%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message-input, .private-message-input {
+  display: flex;
+  margin-top: 10px;
+}
+
+.message-input input, .private-message-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.message-input button, .private-message-input button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.message-input button:disabled, .private-message-input button:disabled {
+  background-color: #b0c4de;
+}
