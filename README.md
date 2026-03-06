@@ -1,4 +1,4 @@
-# Ketchapp - Real-time Chat Application
+# Ketchapp - Real-time Chat Application 
 
 ## Overview
 
