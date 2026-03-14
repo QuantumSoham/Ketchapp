@@ -1,5 +1,5 @@
 # Ketchapp - Real-time Chat Application  
-
+ 
 ## Overview
  
 Ketchapp is a fully real-time user interaction platform that increases active user engagement by approximately 30% and supports over 100 simultaneous users. This is achieved by leveraging a serverless, event-driven architecture using React (with useEffect hooks) and WebSocket on the AWS CloudFront network. Additionally, the application integrates intelligent agentic moderators via Groq API to automate conversation management and streamline user interactions.
